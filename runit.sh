@@ -660,6 +660,7 @@ define  end_snap = '$end_snap' ;
 define  num_days     = 1;
 define  report_type  = 'html';
 define  report_name  = 'awr.html';
+define  view_loc = 'AWR_PDB'
 
 @?/rdbms/admin/awrrpti
 exit;
