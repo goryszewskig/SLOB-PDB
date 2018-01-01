@@ -1150,6 +1150,10 @@ return 0
 
 #---------- Main body
 echo "SLOB 2.4.0"
+
+# pick up the defined environment
+. ./.slob.env
+
 export WORK_DIR=`pwd`
 export LOG="${WORK_DIR=}/cr_tab_and_load.out"
 export ABORT_FLAG_FILE="$WORK_DIR/.abort_slob_load"

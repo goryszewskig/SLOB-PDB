@@ -880,6 +880,10 @@ return 0
 
 #---------- Main body
 
+
+# pick up the defined environment
+. ./.slob.env
+
 export OS_TEMP=${OS_TEMP:=/tmp}
 export SLOB_TEMPDIR=${SLOB_TEMPDIR:=/tmp}
 export WORKDIR=$(pwd)
