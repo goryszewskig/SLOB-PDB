@@ -1351,14 +1351,14 @@ then
 	exit 1
 fi
 
-if ( ! f_check_mto "$ADMIN_CONNECT_STRING" 2>&1 >> $LOG)
-then
-	f_msg FATAL ""
-	f_msg FATAL "This version of SLOB does not support Oracle Multitenant Option"
-	f_msg FATAL
-
-	exit 1
-fi
+#if ( ! f_check_mto "$ADMIN_CONNECT_STRING" 2>&1 >> $LOG)
+#then
+	#f_msg FATAL ""
+	#f_msg FATAL "This version of SLOB does not support Oracle Multitenant Option"
+	#f_msg FATAL
+#
+	#exit 1
+#fi
 
 
 if ( ! f_check_for_sessions "$ADMIN_CONNECT_STRING" 2>&1 >> $LOG)
