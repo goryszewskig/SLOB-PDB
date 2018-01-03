@@ -645,13 +645,15 @@ column db_name   heading "DB Name"   new_value db_name   format a12;
 column dbid      heading "DB Id"     new_value dbid      format 9999999999 just c;
 column awr_location new_value awr_location noprint
 column view_loc new_value awr_location noprint
-
+column dbid_col new_value dbid_col noprint
 
 column end_snap new_value end_snap;
 column begin_snap new_value begin_snap;
 column inst_num new_value inst_num
 
-select sys_context('userenv',decode('$AWR_SRC','AWR_PDB','con_dbid','dbid')) dbid
+select  decode('$AWR_SRC','AWR_PDB','con_dbid','dbid') dbid_col from dual;
+
+select d.&dbid_col dbid
      , decode('$AWR_SRC','AWR_PDB','AWR_PDB','AWR_ROOT') awr_location
      , decode('$AWR_SRC','AWR_PDB','AWR_PDB','AWR_ROOT') view_loc
      , d.name            db_name
@@ -681,12 +683,14 @@ column db_name   heading "DB Name"   new_value db_name   format a12;
 column dbid      heading "DB Id"     new_value dbid      format 9999999999 just c;
 column awr_location new_value awr_location noprint
 column view_loc new_value awr_location noprint
+column dbid_col new_value dbid_col noprint
 
 column end_snap new_value end_snap;
 column begin_snap new_value begin_snap;
 
+select  decode('$AWR_SRC','AWR_PDB','con_dbid','dbid') dbid_col from dual;
 
-select sys_context('userenv',decode('$AWR_SRC','AWR_PDB','con_dbid','dbid')) dbid
+select d.&dbid_col dbid
      , decode('$AWR_SRC','AWR_PDB','AWR_PDB','AWR_ROOT') awr_location
      , decode('$AWR_SRC','AWR_PDB','AWR_PDB','AWR_ROOT') view_loc
      , d.name            db_name
@@ -771,8 +775,11 @@ column db_name   heading "DB Name"   new_value db_name   format a12;
 column dbid      heading "DB Id"     new_value dbid      format 9999999999 just c;
 column awr_location new_value awr_location noprint
 column view_loc new_value awr_location noprint
+column dbid_col new_value dbid_col noprint
 
-select sys_context('userenv',decode('$AWR_SRC','AWR_PDB','con_dbid','dbid')) dbid
+select  decode('$AWR_SRC','AWR_PDB','con_dbid','dbid') dbid_col from dual;
+
+select d.&dbid_col dbid
      , d.name            db_name
      , i.instance_number inst_num
      , i.instance_name   inst_name
