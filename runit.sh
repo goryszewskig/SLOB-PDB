@@ -612,7 +612,7 @@ else
 	SET PAGES 0
 
 	EXEC DBMS_WORKLOAD_REPOSITORY.CREATE_SNAPSHOT
-	SELECT MAX(SNAP_ID) FROM dba_hist_snapshot;
+	SELECT MAX(SNAP_ID) FROM ${AWR_SRC}_SNAPSHOT;
 	EXIT;
 EOF
 	ret=$?
@@ -638,17 +638,22 @@ local end_snap="$3"
 local tmp=""
 
 ($admin_conn <<EOF
-set echo off heading on underline on;
+set echo off heading on underline on tab off;
 column inst_num  heading "Inst Num"  new_value inst_num  format 99999;
 column inst_name heading "Instance"  new_value inst_name format a12;
 column db_name   heading "DB Name"   new_value db_name   format a12;
 column dbid      heading "DB Id"     new_value dbid      format 9999999999 just c;
+column awr_location new_value awr_location noprint
+column view_loc new_value awr_location noprint
+
 
 column end_snap new_value end_snap;
 column begin_snap new_value begin_snap;
+column inst_num new_value inst_num
 
-
-select d.dbid            dbid
+select sys_context('userenv',decode('$AWR_SRC','AWR_PDB','con_dbid','dbid')) dbid
+     , decode('$AWR_SRC','AWR_PDB','AWR_PDB','AWR_ROOT') awr_location
+     , decode('$AWR_SRC','AWR_PDB','AWR_PDB','AWR_ROOT') view_loc
      , d.name            db_name
      , i.instance_number inst_num
      , i.instance_name   inst_name
@@ -660,7 +665,7 @@ define  end_snap = '$end_snap' ;
 define  num_days     = 1;
 define  report_type  = 'html';
 define  report_name  = 'awr.html';
-define  view_loc = 'AWR_PDB'
+select instance_number inst_num from gv\$instance;
 
 @?/rdbms/admin/awrrpti
 exit;
@@ -669,17 +674,21 @@ EOF
 
 ($admin_conn <<EOF
 
-set echo off heading on underline on;
+set echo off heading on underline on tab off;
 column inst_num  heading "Inst Num"  new_value inst_num  format 99999;
 column inst_name heading "Instance"  new_value inst_name format a12;
 column db_name   heading "DB Name"   new_value db_name   format a12;
 column dbid      heading "DB Id"     new_value dbid      format 9999999999 just c;
+column awr_location new_value awr_location noprint
+column view_loc new_value awr_location noprint
 
 column end_snap new_value end_snap;
 column begin_snap new_value begin_snap;
 
 
-select d.dbid            dbid
+select sys_context('userenv',decode('$AWR_SRC','AWR_PDB','con_dbid','dbid')) dbid
+     , decode('$AWR_SRC','AWR_PDB','AWR_PDB','AWR_ROOT') awr_location
+     , decode('$AWR_SRC','AWR_PDB','AWR_PDB','AWR_ROOT') view_loc
      , d.name            db_name
      , i.instance_number inst_num
      , i.instance_name   inst_name
@@ -688,25 +697,45 @@ select d.dbid            dbid
 
 define  begin_snap = '$begin_snap' ;
 define  end_snap = '$end_snap' ;
+select instance_number inst_num from gv\$instance;
 
 define  num_days     = 1;
 
 define  report_type  = 'text';
 define  report_name  = 'awr.txt';
+select instance_number inst_num from gv\$instance;
 
 @?/rdbms/admin/awrrpti
+
+column awr_location new_value awr_location noprint
+column view_loc new_value awr_location noprint
+
+select 
+     decode('$AWR_SRC','AWR_PDB','AWR_PDB','AWR_ROOT') awr_location
+     , decode('$AWR_SRC','AWR_PDB','AWR_PDB','AWR_ROOT') view_loc
+from dual;
 
 define  begin_snap = '$begin_snap' ;
 define  end_snap = '$end_snap' ;
 define  report_type  = 'text';
 define  report_name = 'awr_rac.txt';
+select instance_number inst_num from gv\$instance;
 
 @?/rdbms/admin/awrgrpt.sql
+
+column awr_location new_value awr_location noprint
+column view_loc new_value awr_location noprint
+
+select 
+     decode('$AWR_SRC','AWR_PDB','AWR_PDB','AWR_ROOT') awr_location
+     , decode('$AWR_SRC','AWR_PDB','AWR_PDB','AWR_ROOT') view_loc
+from dual;
 
 define  begin_snap = '$begin_snap' ;
 define  end_snap = '$end_snap' ;
 define  report_type  = 'html';
 define  report_name  = 'awr_rac.html';
+select instance_number inst_num from gv\$instance;
 
 @?/rdbms/admin/awrgrpt.sql
 
@@ -735,13 +764,15 @@ local tmp=""
 
 ($admin_conn <<EOF
 WHENEVER SQLERROR EXIT 2;
-set echo off heading on underline on;
+set echo off heading on underline on tab off;
 column inst_num  heading "Inst Num"  new_value inst_num  format 99999;
 column inst_name heading "Instance"  new_value inst_name format a12;
 column db_name   heading "DB Name"   new_value db_name   format a12;
 column dbid      heading "DB Id"     new_value dbid      format 9999999999 just c;
+column awr_location new_value awr_location noprint
+column view_loc new_value awr_location noprint
 
-select d.dbid            dbid
+select sys_context('userenv',decode('$AWR_SRC','AWR_PDB','con_dbid','dbid')) dbid
      , d.name            db_name
      , i.instance_number inst_num
      , i.instance_name   inst_name
@@ -881,8 +912,7 @@ return 0
 #---------- Main body
 
 
-# pick up the defined environment
-. ./.slob.env
+. ./.slob.env 
 
 export OS_TEMP=${OS_TEMP:=/tmp}
 export SLOB_TEMPDIR=${SLOB_TEMPDIR:=/tmp}
